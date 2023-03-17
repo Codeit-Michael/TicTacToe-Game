@@ -1,34 +1,65 @@
 import os
 
-class TicTacToe:
+import pygame
+from pygame.locals import *
 
-	def __init__(self):
-		self.table = [["-","-","-"],["-","-","-"],["-","-","-"]]
-		self.player = 	"X"
+
+pygame.init()
+pygame.font.init()
+
+window_size = (450, 500)
+
+cell_size = 150
+
+screen = pygame.display.set_mode(window_size)
+pygame.display.set_caption("Tic Tac Toe")
+
+class TicTacToe():
+
+	def __init__(self, cell_size):
+		self.cell_size = cell_size
+		self.player = "X"
 		self.winner = None
 		self.running = True
+		self.table = []
+		for col in range(3):
+			self.table.append([])
+			for row in range(3):
+				self.table[col].append("-")
+
+		self.draw_playah = None
+
+		self.background_color = (200, 200, 230)
+		self.table_color = (10, 20, 7)
+		self.line_color = (190, 0, 10)
+		self.font = pygame.font.SysFont("Courier New", 20)
+		self.FPS = pygame.time.Clock()
 
 
-	def _show_table(self):
-		for row in self.table:
-			print(row)
+	def draw_table(self):
+		# draw this part w/ math
+		r1 = pygame.draw.line(screen, self.table_color, [25, 153], [425, 153], 10)
+		r2 = pygame.draw.line(screen, self.table_color, [25, 287], [425, 287], 10)
+		c1 = pygame.draw.line(screen, self.table_color, [153, 25], [153, 425], 10)
+		c2 = pygame.draw.line(screen, self.table_color, [287, 25], [287, 425], 10)
+		instructions = self.font.render('Instructions here', True, (10,0,10))
+		screen.blit(instructions,(125,450))
 
 
 	def _change_player(self):
-		self.player = "O" if self.player == "X" else "X"
+		if self.player == "X":
+			self.player = "O"
+		else:
+			"X"
 
 
-	def _move(self):
-		move_place = input(f"Enter Row & Col count to move {self.player}: ")
-		row, col = move_place.split(" ")
-		# checks if the table cell is blank
-		if self.table[int(row)-1][int(col)-1] == "-":
-			self.table[int(row)-1][int(col)-1] = self.player
+	def move(self, pos):
+		x, y = pos[0] // self.cell_size, pos[1] // self.cell_size
+		if self.table[x][y] == "-":
+			self.table[x][y] = self.player
 
 
 	def _message(self):
-		os.system('cls' if os.name=='nt' else 'clear')
-		self._show_table()
 		if self.winner is not None:
 			print(f"{self.winner} wins!!")
 		elif not self.running:
@@ -36,10 +67,10 @@ class TicTacToe:
 
 
 	def _game_check(self):
-		# horizontal check
-		for row in self.table:
+		# vertical check
+		for col in self.table:
 			win = True
-			for content in row:
+			for content in col:
 				if content != self.player:
 					win = False
 					break
@@ -48,11 +79,11 @@ class TicTacToe:
 				self._message()
 				break
 
-		# vertical check
-		for col in range(len(self.table)):
+		# horizontal check
+		for row in range(len(self.table)):
 			win = True
-			for row in range(len(self.table)):
-				if self.table[row][col] != self.player:
+			for col in range(len(self.table)):
+				if self.table[col][row] != self.player:
 					win = False
 					break
 			if win == True:
@@ -92,14 +123,50 @@ class TicTacToe:
 
 
 	def main(self):
+		screen.fill(self.background_color)
+		self.draw_table()
 		while self.running and self.winner == None:
-			os.system('cls' if os.name=='nt' else 'clear')
-			self._show_table()
-			self._move()
-			self._game_check()
-			self._change_player()
+			mx, my = pygame.mouse.get_pos()
+			for self.event in pygame.event.get():
+				if self.event.type == pygame.QUIT:
+					self.running = False
+
+				if self.event.type == pygame.MOUSEBUTTONDOWN:
+					self.move(self.event.pos)
+					self._game_check()
+					self._change_player()
+
+			pygame.display.flip()
+			self.FPS.tick(60)
 
 
-if __name__ == "__main__":
-	g  = TicTacToe()
-	g.main()
+f = TicTacToe(cell_size)
+f.main()
+
+
+
+
+"""
+yellow bg, orange sb, light blue instructions - In Pallette in Browser
+
+Make it Right Phase
+-replan game
+	*flow
+	*to add
+	*frame per sec update (chars added must stay in their pos)
+-draw characters
+	*draw line/circle char or append img?
+
+
+	
+drawing the board config might be done w/:
+	def _draw_cell(self, cell):
+		pygame.draw.rect(screen, self.line_color, cell)
+
+	def _make_cell(self):
+		for col in range(3):
+			for row in range(3):
+				self._draw_cell(pygame.Rect(row * self.cell_width, col * self.cell_height, self.cell_width, self.cell_height))
+		self._draw_cell()
+
+"""
