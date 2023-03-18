@@ -15,8 +15,11 @@ pygame.display.set_caption("Tic Tac Toe")
 
 class TicTacToe():
 
-	def __init__(self, cell_size):
+	def __init__(self, cell_size, table_length):
 		self.cell_size = cell_size
+		self.table_length = table_length
+		self.table_space = 20
+
 		self.player = "X"
 		self.winner = None
 		self.taking_move = True
@@ -30,25 +33,25 @@ class TicTacToe():
 		self.background_color = (200, 200, 230)
 		self.table_color = (10, 20, 7)
 		self.line_color = (190, 0, 10)
-		self.font = pygame.font.SysFont("Courier New", 20)
+		self.game_over_color = (0, 0, 79)
+		self.font = pygame.font.SysFont("Courier New", 35)
 		self.FPS = pygame.time.Clock()
-
-
-	def draw_table(self):
-		# draw this part w/ math
-		r1 = pygame.draw.line(screen, self.table_color, [20, 150], [430, 150], 8)
-		r2 = pygame.draw.line(screen, self.table_color, [20, 300], [430, 300], 8)
-		c1 = pygame.draw.line(screen, self.table_color, [150, 20], [150, 430], 8)
-		c2 = pygame.draw.line(screen, self.table_color, [300, 20], [300, 430], 8)
-		instructions = self.font.render('Instructions here', True, (10,0,10))
-		screen.blit(instructions,(125,450))
 
 
 	def _change_player(self):
 		self.player = "O" if self.player == "X" else "X"
 
 
-	def draw_char(self, x, y, player):
+	def _draw_table(self):
+		tb_space_point = (self.table_space, self.table_length - self.table_space)
+		cell_space_point = (self.cell_size, self.cell_size * 2)
+		r1 = pygame.draw.line(screen, self.table_color, [tb_space_point[0], cell_space_point[0]], [tb_space_point[1], cell_space_point[0]], 8)
+		c1 = pygame.draw.line(screen, self.table_color, [cell_space_point[0], tb_space_point[0]], [cell_space_point[0], tb_space_point[1]], 8)
+		r2 = pygame.draw.line(screen, self.table_color, [tb_space_point[0], cell_space_point[1]], [tb_space_point[1], cell_space_point[1]], 8)
+		c2 = pygame.draw.line(screen, self.table_color, [cell_space_point[1], tb_space_point[0]], [cell_space_point[1], tb_space_point[1]], 8)
+
+
+	def _draw_char(self, x, y, player):
 		if self.player == "O":
 			img = pygame.image.load("images/Tc-O.png")
 		elif self.player == "X":
@@ -57,42 +60,67 @@ class TicTacToe():
 		screen.blit(img, (x * self.cell_size, y * self.cell_size, self.cell_size, self.cell_size))
 
 
-	def move(self, pos):
+	def _pattern_strike(self, pattern_list):
+		print(pattern_list)
+		# plan this:
+		# getting each cell using pattern_list
+		# get each cell's center
+		# create a line with those centers
+
+
+	def _move(self, pos):
 		x, y = pos[0] // self.cell_size, pos[1] // self.cell_size
 		if self.table[x][y] == "-":
 			self.table[x][y] = self.player
-			self.draw_char(x,y,self.player)
+			self._draw_char(x,y,self.player)
 
 
 	def _message(self):
 		if self.winner is not None:
-			print(f"{self.winner} wins!!")
+			screen.fill(self.game_over_color, (130, 440, 193, 35))
+			msg = self.font.render(f'{self.winner} WINS!!', True, (10,0,10))
+			screen.blit(msg,(144,440))
 		elif not self.taking_move:
-			print("Draw!!")
-
+			screen.fill(self.game_over_color, (130, 440, 193, 35))
+			instructions = self.font.render('DRAW!!', True, (10,0,10))
+			screen.blit(instructions,(165,440))
+		else:
+			screen.fill(self.background_color, (135, 445, 188, 25))
+			instructions = self.font.render(f'{self.player} to move', True, (10,0,10))
+			screen.blit(instructions,(135,440))
 
 	def _game_check(self):
 		# vertical check
-		for col in self.table:
+		for x_index, col in enumerate(self.table):
 			win = True
-			for content in col:
+			pattern_list = []
+			for y_index, content in enumerate(col):
 				if content != self.player:
 					win = False
 					break
+				else:
+					pattern_list.append((x_index, y_index))
 			if win == True:
+				self._pattern_strike(pattern_list)
 				self.winner = self.player
+				self.taking_move = False
 				self._message()
 				break
 
 		# horizontal check
 		for row in range(len(self.table)):
 			win = True
+			pattern_lists = []
 			for col in range(len(self.table)):
 				if self.table[col][row] != self.player:
 					win = False
 					break
+				else:
+					pattern_list.append((col, row))
 			if win == True:
+				self._pattern_strike(pattern_list)
 				self.winner = self.player
+				self.taking_move = False
 				self._message()
 				break
 
@@ -103,7 +131,9 @@ class TicTacToe():
 				win = False
 				break
 		if win == True:
+			self._pattern_strike(pattern_list = [(0,0),(1,1),(2,2)])
 			self.winner = self.player
+			self.taking_move = False
 			self._message()
 
 		# right diagonal check
@@ -113,7 +143,9 @@ class TicTacToe():
 				win = False
 				break
 		if win == True:
+			self._pattern_strike(pattern_list = [(2,0),(1,1),(0,2)])
 			self.winner = self.player
+			self.taking_move = False
 			self._message()
 
 		# blank table cells check
@@ -129,16 +161,16 @@ class TicTacToe():
 
 	def main(self):
 		screen.fill(self.background_color)
+		self._draw_table()
 		while self.running:
-			self.draw_table()
-			mx, my = pygame.mouse.get_pos()
+			self._message()
 			for self.event in pygame.event.get():
 				if self.event.type == pygame.QUIT:
 					self.running = False
 
 				if self.event.type == pygame.MOUSEBUTTONDOWN:
 					if self.taking_move:
-						self.move(self.event.pos)
+						self._move(self.event.pos)
 						self._game_check()
 						self._change_player()
 
@@ -146,5 +178,7 @@ class TicTacToe():
 			self.FPS.tick(60)
 
 
-f = TicTacToe(cell_size)
-f.main()
+
+if __name__ == "__main__":
+	g = TicTacToe(cell_size, window_size[0])
+	g.main()
