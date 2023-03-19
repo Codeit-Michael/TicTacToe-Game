@@ -60,17 +60,25 @@ class TicTacToe():
 		screen.blit(img, (x * self.cell_size, y * self.cell_size, self.cell_size, self.cell_size))
 
 
-	def _pattern_strike(self, x, y):
-		val = self.cell_size // 2
-		start_x, start_y = x[0] * self.cell_size + self.table_space, x[-1] * self.cell_size + val
-		end_x, end_y = y[0] * self.cell_size + self.table_space, y[-1] * self.cell_size + val
-		print([start_x, start_y], [end_x, end_y])
-		pygame.draw.line(screen, self.line_color, [start_x, start_y], [end_x, end_y], 20)
-		# pygame.draw.line(screen, self.line_color, [20, 75], [430, 75], 20)
-		# plan this:
-		# getting each cell using pattern_list
-		# get each cell's center
-		# create a line with those centers
+	def _pattern_strike(self, start_point, end_point, line_type):
+		mid_val = self.cell_size // 2
+		if line_type == "ver":
+			start_x, start_y = start_point[0] * self.cell_size + mid_val, self.table_space
+			end_x, end_y = end_point[0] * self.cell_size + mid_val, self.table_length - self.table_space
+
+		elif line_type == "hor":
+			start_x, start_y = self.table_space, start_point[-1] * self.cell_size + mid_val
+			end_x, end_y = self.table_length - self.table_space, end_point[-1] * self.cell_size + mid_val
+
+		elif line_type == "left-diag":
+			start_x, start_y = self.table_space, self.table_space
+			end_x, end_y = self.table_length - self.table_space, self.table_length - self.table_space
+
+		elif line_type == "right-diag":
+			start_x, start_y = self.table_length - self.table_space, self.table_space
+			end_x, end_y = self.table_space, self.table_length - self.table_space
+
+		line_strike = pygame.draw.line(screen, self.line_color, [start_x, start_y], [end_x, end_y], 8)
 
 
 	def _move(self, pos):
@@ -108,7 +116,7 @@ class TicTacToe():
 				else:
 					pattern_list.append((x_index, y_index))
 			if win == True:
-				self._pattern_strike(pattern_list[0],pattern_list[-1])
+				self._pattern_strike(pattern_list[0],pattern_list[-1],"ver")
 				self.winner = self.player
 				self.taking_move = False
 				self._message()
@@ -125,8 +133,7 @@ class TicTacToe():
 				else:
 					pattern_list.append((col, row))
 			if win == True:
-				print(pattern_list[0],pattern_list[-1])
-				self._pattern_strike(pattern_list[0],pattern_list[-1])
+				self._pattern_strike(pattern_list[0],pattern_list[-1],"hor")
 				self.winner = self.player
 				self.taking_move = False
 				self._message()
@@ -139,7 +146,7 @@ class TicTacToe():
 				win = False
 				break
 		if win == True:
-			self._pattern_strike((0,0),(2,2))
+			self._pattern_strike((0,0),(2,2),"left-diag")
 			self.winner = self.player
 			self.taking_move = False
 			self._message()
@@ -151,7 +158,7 @@ class TicTacToe():
 				win = False
 				break
 		if win == True:
-			self._pattern_strike((2,0),(0,2))
+			self._pattern_strike((2,0),(0,2),"right-diag")
 			self.winner = self.player
 			self.taking_move = False
 			self._message()
