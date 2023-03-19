@@ -61,7 +61,8 @@ class TicTacToe():
 
 
 	def _pattern_strike(self, pattern_list):
-		print(pattern_list)
+		print(pattern_list[0],pattern_list[-1])
+		# pygame.draw.line(screen, self.line_color, [20, 75], [430, 75], 20)
 		# plan this:
 		# getting each cell using pattern_list
 		# get each cell's center
@@ -73,6 +74,8 @@ class TicTacToe():
 		if self.table[x][y] == "-":
 			self.table[x][y] = self.player
 			self._draw_char(x,y,self.player)
+			self._game_check()
+			self._change_player()	
 
 
 	def _message(self):
@@ -110,7 +113,7 @@ class TicTacToe():
 		# horizontal check
 		for row in range(len(self.table)):
 			win = True
-			pattern_lists = []
+			pattern_list = []
 			for col in range(len(self.table)):
 				if self.table[col][row] != self.player:
 					win = False
@@ -171,8 +174,6 @@ class TicTacToe():
 				if self.event.type == pygame.MOUSEBUTTONDOWN:
 					if self.taking_move:
 						self._move(self.event.pos)
-						self._game_check()
-						self._change_player()
 
 			pygame.display.flip()
 			self.FPS.tick(60)
