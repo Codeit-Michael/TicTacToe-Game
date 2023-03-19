@@ -30,10 +30,12 @@ class TicTacToe():
 			for row in range(3):
 				self.table[col].append("-")
 
-		self.background_color = (200, 200, 230)
-		self.table_color = (10, 20, 7)
+		self.background_color = (255, 174, 66)
+		self.table_color = (50, 50, 50)
 		self.line_color = (190, 0, 10)
-		self.game_over_color = (0, 0, 79)
+		self.instructions_color = (17, 53, 165)
+		self.game_over_bg_color = (47, 98, 162)
+		self.game_over_color = (255, 179, 1)
 		self.font = pygame.font.SysFont("Courier New", 35)
 		self.FPS = pygame.time.Clock()
 
@@ -92,17 +94,18 @@ class TicTacToe():
 
 	def _message(self):
 		if self.winner is not None:
-			screen.fill(self.game_over_color, (130, 440, 193, 35))
-			msg = self.font.render(f'{self.winner} WINS!!', True, (10,0,10))
-			screen.blit(msg,(144,440))
+			screen.fill(self.game_over_bg_color, (130, 445, 193, 35))
+			msg = self.font.render(f'{self.winner} WINS!!', True, self.game_over_color)
+			screen.blit(msg,(144,445))
 		elif not self.taking_move:
-			screen.fill(self.game_over_color, (130, 440, 193, 35))
-			instructions = self.font.render('DRAW!!', True, (10,0,10))
-			screen.blit(instructions,(165,440))
+			screen.fill(self.game_over_bg_color, (130, 445, 193, 35))
+			instructions = self.font.render('DRAW!!', True, self.game_over_color)
+			screen.blit(instructions,(165,445))
 		else:
-			screen.fill(self.background_color, (135, 445, 188, 25))
-			instructions = self.font.render(f'{self.player} to move', True, (10,0,10))
-			screen.blit(instructions,(135,440))
+			screen.fill(self.background_color, (135, 445, 188, 35))
+			instructions = self.font.render(f'{self.player} to move', True, self.instructions_color)
+			screen.blit(instructions,(135,445))
+
 
 	def _game_check(self):
 		# vertical check
@@ -189,7 +192,6 @@ class TicTacToe():
 
 			pygame.display.flip()
 			self.FPS.tick(60)
-
 
 
 if __name__ == "__main__":
