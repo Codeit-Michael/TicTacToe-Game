@@ -60,8 +60,12 @@ class TicTacToe():
 		screen.blit(img, (x * self.cell_size, y * self.cell_size, self.cell_size, self.cell_size))
 
 
-	def _pattern_strike(self, pattern_list):
-		print(pattern_list[0],pattern_list[-1])
+	def _pattern_strike(self, x, y):
+		val = self.cell_size // 2
+		start_x, start_y = x[0] * self.cell_size + self.table_space, x[-1] * self.cell_size + val
+		end_x, end_y = y[0] * self.cell_size + self.table_space, y[-1] * self.cell_size + val
+		print([start_x, start_y], [end_x, end_y])
+		pygame.draw.line(screen, self.line_color, [start_x, start_y], [end_x, end_y], 20)
 		# pygame.draw.line(screen, self.line_color, [20, 75], [430, 75], 20)
 		# plan this:
 		# getting each cell using pattern_list
@@ -104,7 +108,7 @@ class TicTacToe():
 				else:
 					pattern_list.append((x_index, y_index))
 			if win == True:
-				self._pattern_strike(pattern_list)
+				self._pattern_strike(pattern_list[0],pattern_list[-1])
 				self.winner = self.player
 				self.taking_move = False
 				self._message()
@@ -121,7 +125,8 @@ class TicTacToe():
 				else:
 					pattern_list.append((col, row))
 			if win == True:
-				self._pattern_strike(pattern_list)
+				print(pattern_list[0],pattern_list[-1])
+				self._pattern_strike(pattern_list[0],pattern_list[-1])
 				self.winner = self.player
 				self.taking_move = False
 				self._message()
@@ -134,7 +139,7 @@ class TicTacToe():
 				win = False
 				break
 		if win == True:
-			self._pattern_strike(pattern_list = [(0,0),(1,1),(2,2)])
+			self._pattern_strike((0,0),(2,2))
 			self.winner = self.player
 			self.taking_move = False
 			self._message()
@@ -146,7 +151,7 @@ class TicTacToe():
 				win = False
 				break
 		if win == True:
-			self._pattern_strike(pattern_list = [(2,0),(1,1),(0,2)])
+			self._pattern_strike((2,0),(0,2))
 			self.winner = self.player
 			self.taking_move = False
 			self._message()
