@@ -44,6 +44,7 @@ class TicTacToe():
 		self.player = "O" if self.player == "X" else "X"
 
 
+	# draws table representation
 	def _draw_table(self):
 		tb_space_point = (self.table_space, self.table_length - self.table_space)
 		cell_space_point = (self.cell_size, self.cell_size * 2)
@@ -53,6 +54,20 @@ class TicTacToe():
 		c2 = pygame.draw.line(screen, self.table_color, [cell_space_point[1], tb_space_point[0]], [cell_space_point[1], tb_space_point[1]], 8)
 
 
+	# processing clicks to move
+	def _move(self, pos):
+		try:
+			x, y = pos[0] // self.cell_size, pos[1] // self.cell_size
+			if self.table[x][y] == "-":
+				self.table[x][y] = self.player
+				self._draw_char(x,y,self.player)
+				self._game_check()
+				self._change_player()
+		except:
+			print("Click inside the table only")
+
+
+	# draws character of the recent to the selected table cell
 	def _draw_char(self, x, y, player):
 		if self.player == "O":
 			img = pygame.image.load("images/Tc-O.png")
@@ -62,36 +77,7 @@ class TicTacToe():
 		screen.blit(img, (x * self.cell_size, y * self.cell_size, self.cell_size, self.cell_size))
 
 
-	def _pattern_strike(self, start_point, end_point, line_type):
-		mid_val = self.cell_size // 2
-		if line_type == "ver":
-			start_x, start_y = start_point[0] * self.cell_size + mid_val, self.table_space
-			end_x, end_y = end_point[0] * self.cell_size + mid_val, self.table_length - self.table_space
-
-		elif line_type == "hor":
-			start_x, start_y = self.table_space, start_point[-1] * self.cell_size + mid_val
-			end_x, end_y = self.table_length - self.table_space, end_point[-1] * self.cell_size + mid_val
-
-		elif line_type == "left-diag":
-			start_x, start_y = self.table_space, self.table_space
-			end_x, end_y = self.table_length - self.table_space, self.table_length - self.table_space
-
-		elif line_type == "right-diag":
-			start_x, start_y = self.table_length - self.table_space, self.table_space
-			end_x, end_y = self.table_space, self.table_length - self.table_space
-
-		line_strike = pygame.draw.line(screen, self.line_color, [start_x, start_y], [end_x, end_y], 8)
-
-
-	def _move(self, pos):
-		x, y = pos[0] // self.cell_size, pos[1] // self.cell_size
-		if self.table[x][y] == "-":
-			self.table[x][y] = self.player
-			self._draw_char(x,y,self.player)
-			self._game_check()
-			self._change_player()	
-
-
+	# instructions and game-state messages
 	def _message(self):
 		if self.winner is not None:
 			screen.fill(self.game_over_bg_color, (130, 445, 193, 35))
@@ -175,6 +161,35 @@ class TicTacToe():
 		if blank_cells == 0:
 			self.taking_move = False
 			self._message()
+
+
+	# strikes a line to winning patterns if already has
+	def _pattern_strike(self, start_point, end_point, line_type):
+		# gets the middle value of the cell
+		mid_val = self.cell_size // 2
+
+		# for the vertical winning pattern
+		if line_type == "ver":
+			start_x, start_y = start_point[0] * self.cell_size + mid_val, self.table_space
+			end_x, end_y = end_point[0] * self.cell_size + mid_val, self.table_length - self.table_space
+
+		# for the horizontal winning pattern
+		elif line_type == "hor":
+			start_x, start_y = self.table_space, start_point[-1] * self.cell_size + mid_val
+			end_x, end_y = self.table_length - self.table_space, end_point[-1] * self.cell_size + mid_val
+
+		# for the diagonal winning pattern from top-left to bottom right
+		elif line_type == "left-diag":
+			start_x, start_y = self.table_space, self.table_space
+			end_x, end_y = self.table_length - self.table_space, self.table_length - self.table_space
+
+		# for the diagonal winning pattern from top-right to bottom-left
+		elif line_type == "right-diag":
+			start_x, start_y = self.table_length - self.table_space, self.table_space
+			end_x, end_y = self.table_space, self.table_length - self.table_space
+
+		# draws the line strike
+		line_strike = pygame.draw.line(screen, self.line_color, [start_x, start_y], [end_x, end_y], 8)
 
 
 	def main(self):
