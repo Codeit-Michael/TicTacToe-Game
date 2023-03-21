@@ -103,3 +103,41 @@ class TicTacToe:
 if __name__ == "__main__":
 	g  = TicTacToe()
 	g.main()
+
+
+
+
+
+
+"""
+yellow bg, orange sb, light blue instructions - In Pallette in Browser
+
+Make it Right Phase
+-replan game
+	*flow
+	*to add
+	*frame per sec update (chars added must stay in their pos)
+-draw characters
+	*draw line/circle char or append img?
+
+
+	
+drawing the board config might be done w/:
+	def _draw_cell(self, cell):
+		pygame.draw.rect(screen, self.line_color, cell)
+
+	def _make_cell(self):
+		for col in range(3):
+			for row in range(3):
+				self._draw_cell(pygame.Rect(row * self.cell_width, col * self.cell_height, self.cell_width, self.cell_height))
+		self._draw_cell()
+
+
+	def draw_char(self, x, y, player):
+		filled_cell = []
+		for y_index, col in enumerate(self.table):
+			for x_index, cell in enumerate(col):
+				if cell == "X" or cell == "O":
+					filled_cell.append((x_index, y_index))
+		print(filled_cel)
+"""
